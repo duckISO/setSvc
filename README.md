@@ -3,6 +3,8 @@ An interactive and customisable replacement for `sc config`, which can configure
 
 `sc config` is not able to configure the startup type for every service/driver, some services/drivers always output an 'Access denied' error.
 
+**Download:** https://raw.githubusercontent.com/duckISO/setSvc/main/setSvc.cmd (right click -> 'Save as')
+
 ## Features
 - An interactive option, where it will prompt the user about configuring a service
 - Automatic elevation to TrustedInstaller (if avaliable) or regular admin (`/q` argument only)
