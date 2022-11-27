@@ -6,7 +6,7 @@ An interactive and customisable replacement for `sc config`, which can configure
 ## Features
 - An interactive option, where it will prompt the user about configuring a service
 - Automatic elevation to TrustedInstaller (if avaliable) or regular admin (`/q` argument only)
-- Checking if the service/driver exists or not
+- Checking if the service/driver exists or not, and other error detection
 - Option to attempt to stop the service/driver being configured
 - Ability to use it as a function in scripts (use `call (setSvc.cmd path here) "(service)" "(start)" /f`)
 - Help menu
