@@ -80,9 +80,13 @@ reg add "HKLM\System\CurrentControlSet\Services\%service%" /v "Start" /t REG_DWO
 	echo Failed to set service %service% with start value %start%! Unknown error.)
 )
 if "%killService%"=="true" (
-	sc stop "%service%" > nul
-	if not %%errorlevel%%==0 (
-		echo Service/driver '%service%' failed to stop!
+	sc stop "%service%" >nul 2>&1
+	set errorlevel1=%%errorlevel%%
+	if not %errorlevel1%==0 (
+		if not %errorlevel1%==1062 (
+			echo Service/driver '%service%' failed to stop!
+			pause
+		) else (echo Service/driver '%service%' was already stopped.)
 	)
 )
 exit /b 0
