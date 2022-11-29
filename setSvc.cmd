@@ -226,8 +226,8 @@ echo Description:
 echo     This script can be called as a function (in scripts) or a standalone script to modify
 echo     service or driver's startup type in registry. If an error occurs, the errorlevel will
 echo     be set to 1. Use speech marks in arguments, and it is recommended to run this script
-echo     as TrustedInstaller with NSudo or another tool. Do not run this redirect this script
-echo     to 'nul', as it no errors will be outputed.
+echo     as TrustedInstaller with NSudo or PowerRun. Do not run this redirect this script
+echo     to 'nul', as no errors will be outputed.
 echo]
 echo     You must specify either /s or /f.
 echo]
