@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 set system=true
 set setSvcWarning=true
 set invalid=false
@@ -75,18 +76,18 @@ if "%system%"=="false" (
 		echo WARNING: Not running as System, could fail modifying some services/drivers with an access denied error.
 	)
 )
-reg add "HKLM\System\CurrentControlSet\Services\%service%" /v "Start" /t REG_DWORD /d "%start%" /f > nul || (
-	if "%system%"=="false" (echo Failed to set service %service% with start value %start%! Not running as System, access denied?) else (
-	echo Failed to set service %service% with start value %start%! Unknown error.)
+reg add "HKLM\System\CurrentControlSet\Services\%service%" /v "Start" /t REG_DWORD /d "%start%" /f >nul 2>&1 || (
+	if %system%==false (
+		echo Failed to set service %service% with start value %start%! Not running as System, access denied?
+	) else (
+		echo Failed to set service %service% with start value %start%! Unknown error.
+	)
 )
 if "%killService%"=="true" (
 	sc stop "%service%" >nul 2>&1
-	set errorlevel1=%%errorlevel%%
-	if not %errorlevel1%==0 (
-		if not %errorlevel1%==1062 (
-			echo Service/driver '%service%' failed to stop!
-			pause
-		) else (echo Service/driver '%service%' was already stopped.)
+	set errorlevel1=!errorlevel!
+	if not !errorlevel1!==0 (
+		if not !errorlevel1!==1062 (echo Service/driver '%service%' failed to stop!) else (echo NOTE: Service/driver '%service%' was already stopped.)
 	)
 )
 exit /b 0
