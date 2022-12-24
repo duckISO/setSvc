@@ -1,14 +1,14 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableDelayedExpansion
 set system=true
 set setSvcWarning=true
 set invalid=false
 set standalone=false
 set function=false
 
-whoami /user | findstr /i /c:S-1-5-18 >nul || set system=false
+whoami /user | findstr /i /c:S-1-5-18 > nul || set system=false
 
-:: Check command line arguments, set variables
+:: check command line arguments, set variables
 if [%~3]==[] goto help
 
 if "%~1"=="/f" (
@@ -60,23 +60,23 @@ if "%function%"=="true" (
 if "%function%"=="true" (goto setSvc)
 if "%standalone%"=="true" (goto standalone)
 
-:: Must be invalid if nothing else was detected
+:: must be invalid if nothing else was detected
 set invalid=true
 goto help
 
-:: Function
+:: function
 :setSvc
 if [%service%]==[] (echo You need to run this with a service/driver to disable. & exit /b 1)
 if [%start%]==[] (echo You need to run this with an argument ^(1-5^) to configure the service's startup. & exit /b 1)
 if %start% LSS 0 (echo Invalid start value ^(%start%^) for %service%. & exit /b 1)
 if %start% GTR 5 (echo Invalid start value ^(%start%^) for %service%. & exit /b 1)
-reg query "HKLM\System\CurrentControlSet\Services\%service%" >nul 2>&1 || (echo The specified service/driver ^(%service%^) is not found. & exit /b 1)
+reg query "HKLM\System\CurrentControlSet\Services\%service%" > nul 2>&1 || (echo The specified service/driver ^(%service%^) is not found. & exit /b 1)
 if "%system%"=="false" (
 	if not "%setSvcWarning%"=="false" (
 		echo WARNING: Not running as System, could fail modifying some services/drivers with an access denied error.
 	)
 )
-reg add "HKLM\System\CurrentControlSet\Services\%service%" /v "Start" /t REG_DWORD /d "%start%" /f >nul 2>&1 || (
+reg add "HKLM\System\CurrentControlSet\Services\%service%" /v "Start" /t REG_DWORD /d "%start%" /f > nul 2>&1 || (
 	if %system%==false (
 		echo Failed to set service %service% with start value %start%! Not running as System, access denied?
 	) else (
@@ -84,7 +84,7 @@ reg add "HKLM\System\CurrentControlSet\Services\%service%" /v "Start" /t REG_DWO
 	)
 )
 if "%killService%"=="true" (
-	sc stop "%service%" >nul 2>&1
+	sc stop "%service%" > nul 2>&1
 	set errorlevel1=!errorlevel!
 	if not !errorlevel1!==0 (
 		if not !errorlevel1!==1062 (echo Service/driver '%service%' failed to stop!) else (echo NOTE: Service/driver '%service%' was already stopped.)
@@ -97,25 +97,25 @@ if [%service%]==[] (echo You need to run this with a service/driver to disable. 
 if [%start%]==[] (echo You need to run this with an argument ^(1-5^) to configure the service's startup. & pause & exit /b 1)
 if %start% LSS 0 (echo Invalid start value ^(%start%^) for %service%. & pause & exit /b 1)
 if %start% GTR 5 (echo Invalid start value ^(%start%^) for %service%. & pause & exit /b 1)
-reg query "HKLM\System\CurrentControlSet\Services\%service%" >nul 2>&1 || (echo The specified service/driver ^(%service%^) is not found. & pause & exit /b 1)
+reg query "HKLM\System\CurrentControlSet\Services\%service%" > nul 2>&1 || (echo The specified service/driver ^(%service%^) is not found. & pause & exit /b 1)
 
 :: If TrustedInstaller, goto the actual script
 if "%system%"=="true" (goto standalone1)
 if "%setSvcWarning%"=="false" (goto powershellElevation)
 
 :nsudoElevation
-where nsudo >nul 2>&1
+where NSudo > nul 2>&1
 if %errorlevel%==0 (
-	set nsudo=nsudo.exe
+	set nsudo=NSudo.exe
 )
-where nsudolg >nul 2>&1
+where NSudoLG > nul 2>&1
 if %errorlevel%==0 (
-	set nsudo=nsudolg.exe
+	set NSudo=NSudoLG.exe
 )
 
-if defined nsudo (
+if defined NSudo (
 	cls
-	nsudo.exe -U:T -P:E "%~f0" %* && exit /b 0
+	NSudo.exe -U:T -P:E "%~f0" %* && exit /b 0
 	echo NSudo elevation failed! Maybe the UAC prompt was declined?
 	echo]
 	echo Press any key to attempt to use PowerRun instead ^(if installed^)...
@@ -124,11 +124,11 @@ if defined nsudo (
 ) else (goto powerRun)
 
 :powerRunElevation
-where powerrun >nul 2>&1
+where powerrun > nul 2>&1
 if %errorlevel%==0 (
 	set powerrun=powerrun.exe
 )
-where powerrun_x64 >nul 2>&1
+where powerrun_x64 > nul 2>&1
 if %errorlevel%==0 (
 	set powerrun=powerrun_x64.exe
 )
@@ -153,7 +153,7 @@ if defined powerrun (
 )
 
 :powershellElevation
-fltmc >nul 2>&1 || (
+fltmc > nul 2>&1 || (
     echo Elevating to only admin due to /q argument
     PowerShell -NoProfile Start -Verb RunAs '%~f0' -ArgumentList '%*' 2> nul || (
         echo Elevation to administrator privileges failed.
@@ -210,7 +210,7 @@ pause
 exit /b 0
 
 :help
-:: Credit to https://sourcedaddy.com/windows-7/values-for-the-start-registry-entry.html for Start explanations
+:: credit to https://sourcedaddy.com/windows-7/values-for-the-start-registry-entry.html for Start explanations
 
 set error=0
 if "%invalid%"=="true" (
